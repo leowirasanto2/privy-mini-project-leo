@@ -13,6 +13,7 @@ class ViewController: UIViewController {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.setTitle("Face recognition", for: .normal)
         $0.addTarget(self, action: #selector(didTapFaceRecog), for: .touchUpInside)
+        $0.titleLabel?.textColor = .black
         return $0
     }(UIButton())
     
@@ -20,6 +21,7 @@ class ViewController: UIViewController {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.setTitle("QR scanner", for: .normal)
         $0.addTarget(self, action: #selector(didTapQRScanner), for: .touchUpInside)
+        $0.titleLabel?.textColor = .black
         return $0
     }(UIButton())
 
@@ -30,6 +32,8 @@ class ViewController: UIViewController {
     }
     
     private func setupView() {
+        view.backgroundColor = .white
+        
         let stackview = UIStackView(frame: .zero)
         stackview.translatesAutoresizingMaskIntoConstraints = false
         stackview.axis = .vertical
