@@ -13,7 +13,7 @@ class ViewController: UIViewController {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.setTitle("Face recognition", for: .normal)
         $0.addTarget(self, action: #selector(didTapFaceRecog), for: .touchUpInside)
-        $0.titleLabel?.textColor = .black
+        $0.setTitleColor(.black, for: .normal)
         return $0
     }(UIButton())
     
@@ -21,7 +21,7 @@ class ViewController: UIViewController {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.setTitle("QR scanner", for: .normal)
         $0.addTarget(self, action: #selector(didTapQRScanner), for: .touchUpInside)
-        $0.titleLabel?.textColor = .black
+        $0.setTitleColor(.black, for: .normal)
         return $0
     }(UIButton())
 
