@@ -44,6 +44,7 @@ class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDeleg
     
     private var messageLabel: UILabel = {
         $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.textColor = .red
         return $0
     }(UILabel())
     
@@ -58,11 +59,14 @@ class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDeleg
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
+        setupOverlay()
         runCamera()
         
         DispatchQueue.global(qos: .userInteractive).async { [weak self] in
             self?.session?.startRunning()
         }
+        
+        state = .rotateRight
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -80,6 +84,14 @@ class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDeleg
     
     private func setupView() {
         view.backgroundColor = .white
+    }
+    
+    private func setupOverlay() {
+        view.addSubview(messageLabel)
+        NSLayoutConstraint.activate([
+            messageLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            messageLabel.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100)
+        ])
     }
     
     private func forceToFrontCamera() -> AVCaptureDevice? {
@@ -109,6 +121,7 @@ class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDeleg
             
             if let previewLayer = previewLayer {
                 self.view.layer.addSublayer(previewLayer)
+                self.view.bringSubviewToFront(messageLabel)
             }
             session.commitConfiguration()
         }
