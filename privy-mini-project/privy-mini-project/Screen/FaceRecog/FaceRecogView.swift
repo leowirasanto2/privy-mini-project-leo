@@ -8,6 +8,7 @@
 import UIKit
 import AVFoundation
 import Vision
+import SwiftUI
 
 enum ValidationState {
     case preparation
@@ -317,4 +318,15 @@ extension CGFloat {
   var toRadians: CGFloat {
     return self * .pi / 180
   }
+}
+
+
+// MARK: - Preview
+
+struct FaceRecogView_Previews: PreviewProvider {
+    static var previews: some View {
+        ViewControllerPreview {
+            FaceRecogView()
+        }
+    }
 }

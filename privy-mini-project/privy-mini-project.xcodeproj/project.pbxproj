@@ -18,6 +18,7 @@
 		606A47B02C7701F600FBC004 /* FaceRotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606A47AF2C7701F600FBC004 /* FaceRotation.swift */; };
 		606A47B52C770F0700FBC004 /* ViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606A47B42C770F0700FBC004 /* ViewExtensions.swift */; };
 		606A47B72C771D1500FBC004 /* QRKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606A47B62C771D1500FBC004 /* QRKey.swift */; };
+		60ED205A2C77A4FC00B40801 /* ViewControllerPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60ED20592C77A4FC00B40801 /* ViewControllerPreview.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +35,7 @@
 		606A47AF2C7701F600FBC004 /* FaceRotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceRotation.swift; sourceTree = "<group>"; };
 		606A47B42C770F0700FBC004 /* ViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtensions.swift; sourceTree = "<group>"; };
 		606A47B62C771D1500FBC004 /* QRKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRKey.swift; sourceTree = "<group>"; };
+		60ED20592C77A4FC00B40801 /* ViewControllerPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerPreview.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +68,7 @@
 		606A47932C76F45100FBC004 /* privy-mini-project */ = {
 			isa = PBXGroup;
 			children = (
+				60ED20582C77A4EE00B40801 /* Utils */,
 				606A47B32C770EFE00FBC004 /* Extensions */,
 				606A47A82C76F5CE00FBC004 /* Screen */,
 				606A47942C76F45100FBC004 /* AppDelegate.swift */,
@@ -112,6 +115,14 @@
 				606A47B42C770F0700FBC004 /* ViewExtensions.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		60ED20582C77A4EE00B40801 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				60ED20592C77A4FC00B40801 /* ViewControllerPreview.swift */,
+			);
+			path = Utils;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -192,6 +203,7 @@
 				606A47B02C7701F600FBC004 /* FaceRotation.swift in Sources */,
 				606A47952C76F45100FBC004 /* AppDelegate.swift in Sources */,
 				606A47972C76F45100FBC004 /* SceneDelegate.swift in Sources */,
+				60ED205A2C77A4FC00B40801 /* ViewControllerPreview.swift in Sources */,
 				606A47AE2C76F60C00FBC004 /* QRScannerView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
