@@ -15,6 +15,7 @@
 		606A47A12C76F45300FBC004 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 606A47A02C76F45300FBC004 /* Base */; };
 		606A47AC2C76F5E500FBC004 /* FaceRecogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606A47AB2C76F5E500FBC004 /* FaceRecogView.swift */; };
 		606A47AE2C76F60C00FBC004 /* QRScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606A47AD2C76F60C00FBC004 /* QRScannerView.swift */; };
+		606A47B02C7701F600FBC004 /* FaceRotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606A47AF2C7701F600FBC004 /* FaceRotation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		606A47A22C76F45300FBC004 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		606A47AB2C76F5E500FBC004 /* FaceRecogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceRecogView.swift; sourceTree = "<group>"; };
 		606A47AD2C76F60C00FBC004 /* QRScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRScannerView.swift; sourceTree = "<group>"; };
+		606A47AF2C7701F600FBC004 /* FaceRotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceRotation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +87,7 @@
 			isa = PBXGroup;
 			children = (
 				606A47AB2C76F5E500FBC004 /* FaceRecogView.swift */,
+				606A47AF2C7701F600FBC004 /* FaceRotation.swift */,
 			);
 			path = FaceRecog;
 			sourceTree = "<group>";
@@ -170,6 +173,7 @@
 			files = (
 				606A47AC2C76F5E500FBC004 /* FaceRecogView.swift in Sources */,
 				606A47992C76F45100FBC004 /* ViewController.swift in Sources */,
+				606A47B02C7701F600FBC004 /* FaceRotation.swift in Sources */,
 				606A47952C76F45100FBC004 /* AppDelegate.swift in Sources */,
 				606A47972C76F45100FBC004 /* SceneDelegate.swift in Sources */,
 				606A47AE2C76F60C00FBC004 /* QRScannerView.swift in Sources */,

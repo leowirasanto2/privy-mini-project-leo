@@ -9,15 +9,43 @@ import UIKit
 import AVFoundation
 import Vision
 
+enum ValidationState {
+    case faceForward
+    case rotateLeft
+    case rotateRight
+    case success
+    case failed
+}
+
 class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
     private var session: AVCaptureSession? = AVCaptureSession()
     private var captureDevice: AVCaptureDevice?
     private var pinchScale: CGFloat = 1
     private var previewLayer: AVCaptureVideoPreviewLayer?
     private var photoOutput: AVCaptureOutput?
-    private var videoOutput: AVCaptureVideoDataOutput?
-    private var movieOutput: AVCaptureMovieFileOutput?
-    private var drawings: [CAShapeLayer] = []
+    private var videoOutput: AVCaptureVideoDataOutput? = AVCaptureVideoDataOutput()
+    
+    private var state: ValidationState = .rotateRight {
+        didSet {
+            switch state {
+            case .faceForward:
+                messageLabel.text = "Please face forward"
+            case .rotateLeft:
+                messageLabel.text = "Please rotate your face to left"
+            case .rotateRight:
+                messageLabel.text = "Please rotate your face to right"
+            case .success:
+                messageLabel.text = "Face validation success!"
+            case .failed:
+                messageLabel.text = "Face validation failed!"
+            }
+        }
+    }
+    
+    private var messageLabel: UILabel = {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        return $0
+    }(UILabel())
     
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -45,7 +73,6 @@ class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDeleg
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         session?.stopRunning()
-        movieOutput?.stopRecording()
         session = nil
         videoOutput = nil
         photoOutput = nil
@@ -90,7 +117,7 @@ class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDeleg
     private func setupFrame() {
         videoOutput?.videoSettings = [(kCVPixelBufferPixelFormatTypeKey as NSString): NSNumber(value: kCVPixelFormatType_32BGRA)] as [String: Any]
         videoOutput?.alwaysDiscardsLateVideoFrames = true
-        videoOutput?.setSampleBufferDelegate(self, queue: DispatchQueue(label: "camframe_queue"))
+        videoOutput?.setSampleBufferDelegate(self, queue: DispatchQueue.main)
         if let videoOutput = videoOutput, let session = session, !session.outputs.contains(videoOutput) {
             session.addOutput(videoOutput)
         }
@@ -100,7 +127,8 @@ class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDeleg
         connection.videoRotationAngle = 90
     }
     
-    // AVCaptureVideoDataOutputSampleBufferDelegate Implementation
+    // MARK: - AVCaptureVideoDataOutputSampleBufferDelegate Implementation
+    
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         guard let frame = CMSampleBufferGetImageBuffer(sampleBuffer) else {
             return
@@ -108,13 +136,11 @@ class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDeleg
         
         detectFace(image: frame)
     }
-    
-    private func resetDrawings() {
-        drawings.forEach { $0.removeFromSuperlayer() }
-        drawings.removeAll()
-    }
-    
-    private func detectFace(image: CVPixelBuffer) {
+}
+
+// MARK: - setup face detection
+private extension FaceRecogView {
+    func detectFace(image: CVPixelBuffer) {
         let faceDetectionRequest = VNDetectFaceLandmarksRequest { vnRequest, error in
             DispatchQueue.main.async {
                 if let results = vnRequest.results as? [VNFaceObservation], results.count > 0 {
@@ -127,23 +153,33 @@ class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDeleg
         try? imageResultHandler.perform([faceDetectionRequest])
     }
     
-    private func handleFaceDetectionResults(observedFaces: [VNFaceObservation], pixelBuffer: CVPixelBuffer) {
-        
-        resetDrawings()
-        
-        guard let previewLayer = previewLayer else {
-            return
-        }
+    func handleFaceDetectionResults(observedFaces: [VNFaceObservation], pixelBuffer: CVPixelBuffer) {
         for faceObservation in observedFaces {
-            let faceBoundingBoxOnScreen = previewLayer.layerRectConverted(fromMetadataOutputRect: faceObservation.boundingBox)
-            let faceBoundingBoxPath = CGPath(rect: faceBoundingBoxOnScreen, transform: nil)
-            let faceBoundingBoxShape = CAShapeLayer()
+            let faceRotationAngle = CGFloat(truncating: faceObservation.yaw ?? 0)
+            let rotationThreshold = CGFloat(45.0).toRadians
             
-            faceBoundingBoxShape.strokeColor = UIColor.green.cgColor
-            faceBoundingBoxShape.path = faceBoundingBoxPath
-            faceBoundingBoxShape.fillColor = UIColor.clear.cgColor
-            view.layer.addSublayer(faceBoundingBoxShape)
-            drawings.append(faceBoundingBoxShape)
+            switch state {
+            case .faceForward:
+                if abs(faceRotationAngle) <= rotationThreshold {
+                    state = .success
+                }
+            case .rotateLeft:
+                if faceRotationAngle < -rotationThreshold {
+                    state = .faceForward
+                }
+            case .rotateRight:
+                if faceRotationAngle > rotationThreshold {
+                    state = .rotateLeft
+                }
+            default:
+                break
+            }
         }
     }
+}
+
+extension CGFloat {
+  var toRadians: CGFloat {
+    return self * .pi / 180
+  }
 }
