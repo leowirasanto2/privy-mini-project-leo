@@ -17,6 +17,7 @@
 		606A47AE2C76F60C00FBC004 /* QRScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606A47AD2C76F60C00FBC004 /* QRScannerView.swift */; };
 		606A47B02C7701F600FBC004 /* FaceRotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606A47AF2C7701F600FBC004 /* FaceRotation.swift */; };
 		606A47B52C770F0700FBC004 /* ViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606A47B42C770F0700FBC004 /* ViewExtensions.swift */; };
+		606A47B72C771D1500FBC004 /* QRKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606A47B62C771D1500FBC004 /* QRKey.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,7 @@
 		606A47AD2C76F60C00FBC004 /* QRScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRScannerView.swift; sourceTree = "<group>"; };
 		606A47AF2C7701F600FBC004 /* FaceRotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceRotation.swift; sourceTree = "<group>"; };
 		606A47B42C770F0700FBC004 /* ViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtensions.swift; sourceTree = "<group>"; };
+		606A47B62C771D1500FBC004 /* QRKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRKey.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +101,7 @@
 			isa = PBXGroup;
 			children = (
 				606A47AD2C76F60C00FBC004 /* QRScannerView.swift */,
+				606A47B62C771D1500FBC004 /* QRKey.swift */,
 			);
 			path = QRScanner;
 			sourceTree = "<group>";
@@ -184,6 +187,7 @@
 			files = (
 				606A47AC2C76F5E500FBC004 /* FaceRecogView.swift in Sources */,
 				606A47992C76F45100FBC004 /* ViewController.swift in Sources */,
+				606A47B72C771D1500FBC004 /* QRKey.swift in Sources */,
 				606A47B52C770F0700FBC004 /* ViewExtensions.swift in Sources */,
 				606A47B02C7701F600FBC004 /* FaceRotation.swift in Sources */,
 				606A47952C76F45100FBC004 /* AppDelegate.swift in Sources */,

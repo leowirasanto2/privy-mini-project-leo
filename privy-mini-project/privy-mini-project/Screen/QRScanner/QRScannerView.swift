@@ -7,6 +7,7 @@
 
 import UIKit
 import AVFoundation
+import Security
 
 class QRScannerView: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     
@@ -112,9 +113,64 @@ class QRScannerView: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         if let metadataObject = metadataObjects.first {
             guard let readableObject = metadataObject as? AVMetadataMachineReadableCodeObject else { return }
             guard let stringValue = readableObject.stringValue else { return }
-            AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
             
-            print("QR Code Detected: \(stringValue)")
+            //TODO: - We need to
+            // STEP 1: Decrypt the `stringValue` using providedPublic key
+            // STEP 2: the result is a Base64 value
+            // STEP 3: decode it and we will get user_image, username, privy_id
+            // STEP 4: render to custom dialog view
+            
+            decryptResult(stringValue)
+        } else {
+            startSession()
         }
     }
+    
+    func decryptResult(_ result: String) {
+        guard let encryptedData = Data(base64Encoded: result, options: [.ignoreUnknownCharacters]) else {
+            return
+        }
+        
+        let publicKeyData = Data(base64Encoded: QRKey.publicKey)
+        
+        var error: Unmanaged<CFError>?
+        guard let publicKey = SecKeyCreateWithData(publicKeyData! as CFData, [
+            kSecAttrKeyType: kSecAttrKeyTypeRSA,
+            kSecAttrKeyClass: kSecAttrKeyClassPublic,
+            kSecAttrKeySizeInBits: 2048
+        ] as NSDictionary, &error) else {
+            return
+        }
+        guard let decryptedData = SecKeyCreateDecryptedData(publicKey, .rsaEncryptionPKCS1, encryptedData as CFData, &error) as Data? else {
+            return
+        }
+        
+        let base64DecryptedString = decryptedData.base64EncodedString()
+        print("Base64 Encoded Decrypted Data: \(base64DecryptedString)")
+
+        guard let base64DecodedData = Data(base64Encoded: base64DecryptedString, options: [.ignoreUnknownCharacters]) else {
+            print("Failed to decode Base64 string.")
+            return
+        }
+        
+        do {
+            // Convert decrypted data to JSON object
+            if let jsonObject = try JSONSerialization.jsonObject(with: base64DecodedData, options: []) as? [String: Any] {
+                print("JSON Object: \(jsonObject)")
+                // Access JSON fields
+                if let userImage = jsonObject["user_image"] as? String,
+                   let username = jsonObject["username"] as? String,
+                   let privyId = jsonObject["privy_id"] as? String {
+                    print("User Image URL: \(userImage)")
+                    print("Username: \(username)")
+                    print("Privy ID: \(privyId)")
+                }
+            } else {
+                print("Decrypted data is not valid JSON.")
+            }
+        } catch {
+            print("Failed to convert data to JSON: \(error.localizedDescription)")
+        }
+    }
+
 }

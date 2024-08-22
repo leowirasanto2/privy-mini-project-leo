@@ -28,32 +28,7 @@ class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDeleg
     
     private var state: ValidationState = .rotateRight {
         didSet {
-            messageLabel.textColor = .black
-            actionButton.setTitleColor(.black, for: .normal)
-            actionButton.setTitle("Mohon ikuti instruksi", for: .normal)
-            actionButton.isEnabled = state == .preparation || state == .success
-            actionButton.backgroundColor = .gray.withAlphaComponent(0.5)
-            switch state {
-            case .preparation:
-                messageLabel.text = ""
-                actionButton.setTitleColor(.white, for: .normal)
-                actionButton.setTitle("Ambil swafoto", for: .normal)
-                actionButton.backgroundColor = .red
-            case .faceForward:
-                messageLabel.text = "Please face forward"
-            case .rotateLeft:
-                messageLabel.text = "Please rotate your face to left"
-            case .rotateRight:
-                messageLabel.text = "Please rotate your face to right"
-            case .success:
-                messageLabel.textColor = .green
-                actionButton.setTitleColor(.white, for: .normal)
-                actionButton.setTitle("Selesai", for: .normal)
-                actionButton.backgroundColor = .red
-                messageLabel.text = "Face validation success!"
-            case .failed:
-                messageLabel.text = "Face validation failed!"
-            }
+            onStateChanged()
         }
     }
     
@@ -131,67 +106,6 @@ class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDeleg
         view.backgroundColor = .white
         setupOverlay()
         setupInstructionView()
-    }
-    
-    private func setupInstructionView() {
-        let stack = UIStackView()
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        stack.distribution = .fill
-        stack.alignment = .center
-        stack.axis = .horizontal
-        stack.spacing = 16
-        instructionView.addSubview(stack)
-        
-        NSLayoutConstraint.activate([
-            stack.leadingAnchor.constraint(equalTo: instructionView.leadingAnchor, constant: 20),
-            stack.trailingAnchor.constraint(equalTo: instructionView.trailingAnchor, constant: -20),
-            stack.topAnchor.constraint(equalTo: instructionView.topAnchor, constant: 16),
-            stack.bottomAnchor.constraint(equalTo: instructionView.bottomAnchor, constant: -16),
-        ])
-        
-        let image = UIImageView(image: UIImage(systemName: "person.circle"))
-        image.translatesAutoresizingMaskIntoConstraints = false
-        image.heightAnchor.constraint(equalToConstant: 45).isActive = true
-        image.widthAnchor.constraint(equalToConstant: 45).isActive = true
-        image.tintColor = .red
-        let label = UILabel()
-        label.textColor = .black
-        label.text = "Sesuaikan wajah dengan garis panduan"
-        label.numberOfLines = 2
-        [image, label].forEach {
-            stack.addArrangedSubview($0)
-        }
-    }
-    
-    private func setupOverlay() {
-        view.addSubview(overlayView)
-        overlayView.addSubview(instructionView)
-        overlayView.addSubview(messageLabel)
-        overlayView.addSubview(actionButton)
-        
-        NSLayoutConstraint.activate([
-            messageLabel.leadingAnchor.constraint(equalTo: overlayView.leadingAnchor, constant: 16),
-            messageLabel.trailingAnchor.constraint(equalTo: overlayView.trailingAnchor, constant: -16),
-            
-            messageLabel.centerYAnchor.constraint(equalTo: overlayView.centerYAnchor, constant: 180),
-            
-            overlayView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            overlayView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            overlayView.topAnchor.constraint(equalTo: view.topAnchor),
-            overlayView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            
-            instructionView.leadingAnchor.constraint(equalTo: overlayView.leadingAnchor),
-            instructionView.trailingAnchor.constraint(equalTo: overlayView.trailingAnchor),
-            instructionView.topAnchor.constraint(equalTo: messageLabel.topAnchor, constant: 16),
-            
-            actionButton.heightAnchor.constraint(equalToConstant: 50),
-            actionButton.leadingAnchor.constraint(equalTo: overlayView.leadingAnchor, constant: 16),
-            actionButton.trailingAnchor.constraint(equalTo: overlayView.trailingAnchor, constant: -16),
-            actionButton.topAnchor.constraint(equalTo: instructionView.bottomAnchor, constant: 16),
-        ])
-        overlayView.createCircleOverlay(view, 280)
-        
-        actionButton.addTarget(self, action: #selector(onActionTapped), for: .touchUpInside)
     }
     
     private func forceToFrontCamera() -> AVCaptureDevice? {
@@ -303,6 +217,99 @@ private extension FaceRecogView {
                 break
             }
         }
+    }
+}
+
+// MARK: - setup state & views
+private extension FaceRecogView {
+    func onStateChanged() {
+        messageLabel.textColor = .black
+        actionButton.setTitleColor(.black, for: .normal)
+        actionButton.setTitle("Mohon ikuti instruksi", for: .normal)
+        actionButton.isEnabled = state == .preparation || state == .success
+        actionButton.backgroundColor = .gray.withAlphaComponent(0.5)
+        switch state {
+        case .preparation:
+            messageLabel.text = ""
+            actionButton.setTitleColor(.white, for: .normal)
+            actionButton.setTitle("Ambil swafoto", for: .normal)
+            actionButton.backgroundColor = .red
+        case .faceForward:
+            messageLabel.text = "Please face forward"
+        case .rotateLeft:
+            messageLabel.text = "Please rotate your face to left"
+        case .rotateRight:
+            messageLabel.text = "Please rotate your face to right"
+        case .success:
+            messageLabel.textColor = .green
+            actionButton.setTitleColor(.white, for: .normal)
+            actionButton.setTitle("Selesai", for: .normal)
+            actionButton.backgroundColor = .red
+            messageLabel.text = "Face validation success!"
+        case .failed:
+            messageLabel.text = "Face validation failed!"
+        }
+    }
+    
+    func setupInstructionView() {
+        let stack = UIStackView()
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.distribution = .fill
+        stack.alignment = .center
+        stack.axis = .horizontal
+        stack.spacing = 16
+        instructionView.addSubview(stack)
+        
+        NSLayoutConstraint.activate([
+            stack.leadingAnchor.constraint(equalTo: instructionView.leadingAnchor, constant: 20),
+            stack.trailingAnchor.constraint(equalTo: instructionView.trailingAnchor, constant: -20),
+            stack.topAnchor.constraint(equalTo: instructionView.topAnchor, constant: 16),
+            stack.bottomAnchor.constraint(equalTo: instructionView.bottomAnchor, constant: -16),
+        ])
+        
+        let image = UIImageView(image: UIImage(systemName: "person.circle"))
+        image.translatesAutoresizingMaskIntoConstraints = false
+        image.heightAnchor.constraint(equalToConstant: 45).isActive = true
+        image.widthAnchor.constraint(equalToConstant: 45).isActive = true
+        image.tintColor = .red
+        let label = UILabel()
+        label.textColor = .black
+        label.text = "Sesuaikan wajah dengan garis panduan"
+        label.numberOfLines = 2
+        [image, label].forEach {
+            stack.addArrangedSubview($0)
+        }
+    }
+    
+    func setupOverlay() {
+        view.addSubview(overlayView)
+        overlayView.addSubview(instructionView)
+        overlayView.addSubview(messageLabel)
+        overlayView.addSubview(actionButton)
+        
+        NSLayoutConstraint.activate([
+            messageLabel.leadingAnchor.constraint(equalTo: overlayView.leadingAnchor, constant: 16),
+            messageLabel.trailingAnchor.constraint(equalTo: overlayView.trailingAnchor, constant: -16),
+            
+            messageLabel.centerYAnchor.constraint(equalTo: overlayView.centerYAnchor, constant: 180),
+            
+            overlayView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            overlayView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            overlayView.topAnchor.constraint(equalTo: view.topAnchor),
+            overlayView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            instructionView.leadingAnchor.constraint(equalTo: overlayView.leadingAnchor),
+            instructionView.trailingAnchor.constraint(equalTo: overlayView.trailingAnchor),
+            instructionView.topAnchor.constraint(equalTo: messageLabel.topAnchor, constant: 16),
+            
+            actionButton.heightAnchor.constraint(equalToConstant: 50),
+            actionButton.leadingAnchor.constraint(equalTo: overlayView.leadingAnchor, constant: 16),
+            actionButton.trailingAnchor.constraint(equalTo: overlayView.trailingAnchor, constant: -16),
+            actionButton.topAnchor.constraint(equalTo: instructionView.bottomAnchor, constant: 16),
+        ])
+        overlayView.createCircleOverlay(view, 280)
+        
+        actionButton.addTarget(self, action: #selector(onActionTapped), for: .touchUpInside)
     }
 }
 
