@@ -56,29 +56,14 @@ class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDeleg
     }
     
     private func forceToFrontCamera() -> AVCaptureDevice? {
-        let captureSession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInDualCamera], mediaType: .video, position: .front)
+        let captureSession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera], mediaType: .video, position: .front)
         return captureSession.devices.first
     }
     
     private func runCamera() {
-        
-        if let device = AVCaptureDevice.default(.builtInDualCamera,
-                                                for: .video, position: .back) {
+        if let device = forceToFrontCamera() {
             captureDevice = device
-        } else if let device = AVCaptureDevice.default(.builtInWideAngleCamera,
-                                                       for: .video, position: .back) {
-            captureDevice = device
-        } else if let device = AVCaptureDevice.default(.builtInWideAngleCamera,
-                                                       for: .video, position: .front) {
-            captureDevice = device
-        } else {
-            fatalError("Missing expected back camera device.")
         }
-        
-//        if let device = forceToFrontCamera() {
-//            captureDevice = device
-//        }
-//
         if let captureDevice = captureDevice, let session = session {
             session.sessionPreset = AVCaptureSession.Preset.photo
             do {
