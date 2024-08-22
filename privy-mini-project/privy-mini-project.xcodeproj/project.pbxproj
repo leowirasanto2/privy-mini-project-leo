@@ -16,6 +16,8 @@
 		606A47AC2C76F5E500FBC004 /* FaceRecogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606A47AB2C76F5E500FBC004 /* FaceRecogView.swift */; };
 		606A47AE2C76F60C00FBC004 /* QRScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606A47AD2C76F60C00FBC004 /* QRScannerView.swift */; };
 		606A47B02C7701F600FBC004 /* FaceRotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606A47AF2C7701F600FBC004 /* FaceRotation.swift */; };
+		606A47B22C770CAA00FBC004 /* OverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606A47B12C770CAA00FBC004 /* OverlayView.swift */; };
+		606A47B52C770F0700FBC004 /* ViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606A47B42C770F0700FBC004 /* ViewExtensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +32,8 @@
 		606A47AB2C76F5E500FBC004 /* FaceRecogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceRecogView.swift; sourceTree = "<group>"; };
 		606A47AD2C76F60C00FBC004 /* QRScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRScannerView.swift; sourceTree = "<group>"; };
 		606A47AF2C7701F600FBC004 /* FaceRotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceRotation.swift; sourceTree = "<group>"; };
+		606A47B12C770CAA00FBC004 /* OverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayView.swift; sourceTree = "<group>"; };
+		606A47B42C770F0700FBC004 /* ViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +66,7 @@
 		606A47932C76F45100FBC004 /* privy-mini-project */ = {
 			isa = PBXGroup;
 			children = (
+				606A47B32C770EFE00FBC004 /* Extensions */,
 				606A47A82C76F5CE00FBC004 /* Screen */,
 				606A47942C76F45100FBC004 /* AppDelegate.swift */,
 				606A47962C76F45100FBC004 /* SceneDelegate.swift */,
@@ -88,6 +93,7 @@
 			children = (
 				606A47AB2C76F5E500FBC004 /* FaceRecogView.swift */,
 				606A47AF2C7701F600FBC004 /* FaceRotation.swift */,
+				606A47B12C770CAA00FBC004 /* OverlayView.swift */,
 			);
 			path = FaceRecog;
 			sourceTree = "<group>";
@@ -98,6 +104,14 @@
 				606A47AD2C76F60C00FBC004 /* QRScannerView.swift */,
 			);
 			path = QRScanner;
+			sourceTree = "<group>";
+		};
+		606A47B32C770EFE00FBC004 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				606A47B42C770F0700FBC004 /* ViewExtensions.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -173,6 +187,8 @@
 			files = (
 				606A47AC2C76F5E500FBC004 /* FaceRecogView.swift in Sources */,
 				606A47992C76F45100FBC004 /* ViewController.swift in Sources */,
+				606A47B52C770F0700FBC004 /* ViewExtensions.swift in Sources */,
+				606A47B22C770CAA00FBC004 /* OverlayView.swift in Sources */,
 				606A47B02C7701F600FBC004 /* FaceRotation.swift in Sources */,
 				606A47952C76F45100FBC004 /* AppDelegate.swift in Sources */,
 				606A47972C76F45100FBC004 /* SceneDelegate.swift in Sources */,

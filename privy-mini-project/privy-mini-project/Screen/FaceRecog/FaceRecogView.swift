@@ -27,6 +27,7 @@ class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDeleg
     
     private var state: ValidationState = .rotateRight {
         didSet {
+            messageLabel.textColor = .black
             switch state {
             case .faceForward:
                 messageLabel.text = "Please face forward"
@@ -35,6 +36,7 @@ class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDeleg
             case .rotateRight:
                 messageLabel.text = "Please rotate your face to right"
             case .success:
+                messageLabel.textColor = .green
                 messageLabel.text = "Face validation success!"
             case .failed:
                 messageLabel.text = "Face validation failed!"
@@ -44,9 +46,18 @@ class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDeleg
     
     private var messageLabel: UILabel = {
         $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.textColor = .red
+        $0.textColor = .black
+        $0.font = .systemFont(ofSize: 24, weight: .semibold)
+        $0.textAlignment = .center
         return $0
     }(UILabel())
+    
+    private var overlayView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .white
+        return view
+    }()
     
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -88,10 +99,18 @@ class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDeleg
     
     private func setupOverlay() {
         view.addSubview(messageLabel)
+        view.addSubview(overlayView)
         NSLayoutConstraint.activate([
-            messageLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            messageLabel.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100)
+            messageLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            messageLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            messageLabel.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -80),
+            
+            overlayView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            overlayView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            overlayView.topAnchor.constraint(equalTo: view.topAnchor),
+            overlayView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
+        overlayView.createCircleOverlay(view, 380)
     }
     
     private func forceToFrontCamera() -> AVCaptureDevice? {
@@ -121,10 +140,15 @@ class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDeleg
             
             if let previewLayer = previewLayer {
                 self.view.layer.addSublayer(previewLayer)
-                self.view.bringSubviewToFront(messageLabel)
+                rearrangeOverlayView()
             }
             session.commitConfiguration()
         }
+    }
+    
+    private func rearrangeOverlayView() {
+        self.view.bringSubviewToFront(overlayView)
+        self.view.bringSubviewToFront(messageLabel)
     }
     
     private func setupFrame() {
