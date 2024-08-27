@@ -7,12 +7,7 @@
 
 import UIKit
 
-protocol FullscreenLoaderProtocol: AnyObject {
-    func start(_ from: UIViewController?, _ completion: (() -> Void)?)
-    func stop(_ completion: (() -> Void)?)
-}
-
-class FullscreenLoader: UIViewController, FullscreenLoaderProtocol {
+class FullscreenLoader: BaseFullscreenView {
     private lazy var indicatorBg: UIView? = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.backgroundColor = .white
@@ -46,7 +41,7 @@ class FullscreenLoader: UIViewController, FullscreenLoaderProtocol {
     private func setupView() {
         guard let indicator = indicator, let indicatorBg = indicatorBg else { return }
         
-        view.backgroundColor = .black.withAlphaComponent(0.3)
+        view.backgroundColor = .black.withAlphaComponent(0.5)
         view.addSubview(indicatorBg)
         view.addSubview(indicator)
         

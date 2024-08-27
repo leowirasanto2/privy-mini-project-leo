@@ -26,15 +26,6 @@ class FaceRecogPresenter: FaceRecogPresenterProtocol {
     var isActionButtonEnabled: Bool {
         return state == .preparation || state == .success
     }
-    private var isLoading = false {
-        didSet {
-            if isLoading {
-                view?.showLoading()
-            } else {
-                view?.hideLoading()
-            }
-        }
-    }
     private var state: ValidationState = .preparation {
         didSet {
             view?.onValidationStateChanged(state)
@@ -46,13 +37,17 @@ class FaceRecogPresenter: FaceRecogPresenterProtocol {
     }
     
     func onFaceVerificationReceived(_ result: Result<String, FaceError>) {
-        isLoading = false
-        switch result {
-        case .success:
-            setState(new: .success)
-        case .failure(let failure):
-            setState(new: .failed)
-            print(failure.localizedDescription)
+        view?.hideLoading { [weak self] in
+            switch result {
+            case .success:
+                self?.view?.showSuccessScreen {
+                    self?.setState(new: .success)
+                    self?.wireframe?.navigateToNextStep()
+                }
+            case .failure(let failure):
+                self?.setState(new: .failed)
+                print(failure.localizedDescription)
+            }
         }
     }
     
@@ -77,8 +72,9 @@ class FaceRecogPresenter: FaceRecogPresenterProtocol {
         switch state {
         case .faceForward:
             if abs(faceRotationAngle) <= rotationThreshold {
-                self.isLoading = true
-                self.interactor?.fakeSendFaceVerification()
+                self.view?.showLoading { [weak self] in
+                    self?.interactor?.fakeSendFaceVerification()
+                }
                 self.isDetectFaceEnabled = false
             }
         case .rotateLeft:

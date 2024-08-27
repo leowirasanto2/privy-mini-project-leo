@@ -12,8 +12,9 @@ import SwiftUI
 
 protocol FaceRecogViewProtocol: AnyObject {
     func onValidationStateChanged(_ newState: ValidationState)
-    func hideLoading()
-    func showLoading()
+    func hideLoading(_ completion: (() -> Void)?)
+    func showLoading(_ completion: (() -> Void)?)
+    func showSuccessScreen(_ completion: (() -> Void)?)
     var navigationController: UINavigationController? { get }
 }
 
@@ -68,7 +69,8 @@ class FaceRecogView: UIViewController, FaceRecogViewProtocol, AVCaptureVideoData
         return $0
     }(UIButton())
     
-    private var loadingView: FullscreenLoaderProtocol?
+    private var loadingView: BaseFullscreenView?
+    private var successScreen: BaseFullscreenView?
     
     private var overlayView: FaceRecogOverlayView?
     
@@ -229,30 +231,18 @@ class FaceRecogView: UIViewController, FaceRecogViewProtocol, AVCaptureVideoData
         }
     }
     
-    func showLoading() {
+    func showLoading(_ completion: (() -> Void)?) {
         loadingView = FullscreenLoader()
-        loadingView?.start(self, {
-            print("loader started")
-        })
-//        let loaderView = UIView(frame: view.frame)
-//        loaderView.tag = 111
-//        loaderView.backgroundColor = .white
-//        loaderView.alpha = 0.3
-//        let loaderCenter = CGPoint(x: view.frame.midX, y: view.frame.midY)
-//        loaderView.center = view.convert(loaderCenter, from: loaderView)
-//        view.addSubview(loaderView)
-//        
-//        let circular = UIActivityIndicatorView(frame: .init(origin: .zero, size: .init(width: 50, height: 50)))
-//        let cCenter = CGPoint(x: loaderView.frame.midX, y: loaderView.frame.midY)
-//        circular.center = loaderView.convert(cCenter, from: circular)
-//        loaderView.addSubview(circular)
+        loadingView?.start(self, completion)
     }
     
-    func hideLoading() {
-        loadingView?.stop({
-            print("loader stopped")
-        })
-//        view.subviews.first(where: { $0.tag == 111 })?.removeFromSuperview()
+    func hideLoading(_ completion: (() -> Void)?) {
+        loadingView?.stop(completion)
+    }
+    
+    func showSuccessScreen(_ completion: (() -> Void)?) {
+        successScreen = SuccessScreen(message: "Face verification finished!", duration: 1.5)
+        successScreen?.start(self, completion)
     }
 }
 
