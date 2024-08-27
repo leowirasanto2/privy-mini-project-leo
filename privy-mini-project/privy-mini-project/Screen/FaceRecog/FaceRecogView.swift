@@ -66,14 +66,7 @@ class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDeleg
         return $0
     }(UIButton())
     
-    private var overlayView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .white
-        return view
-    }()
-    
-    private var overlayView2: FaceRecogOverlayView?
+    private var overlayView: FaceRecogOverlayView?
     
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -165,7 +158,7 @@ class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDeleg
     }
     
     private func rearrangeOverlayView() {
-        guard let overlayView2 = overlayView2 else { return }
+        guard let overlayView2 = overlayView else { return }
         self.view.bringSubviewToFront(overlayView2)
     }
     
@@ -236,43 +229,41 @@ private extension FaceRecogView {
 // MARK: - setup state & views
 private extension FaceRecogView {
     func onStateChanged() {
-        messageLabel.textColor = .black
-        actionButton.setTitleColor(.black, for: .normal)
-        actionButton.setTitle("Mohon ikuti instruksi", for: .normal)
-        actionButton.isEnabled = state == .preparation || state == .success
-        actionButton.backgroundColor = .gray.withAlphaComponent(0.5)
+        guard let overlayView = overlayView else { return }
+
+        overlayView.actionButton.setTitleColor(.black, for: .normal)
+        overlayView.actionButton.setTitle("Mohon ikuti instruksi", for: .normal)
+        overlayView.actionButton.isEnabled = state == .preparation || state == .success
+        overlayView.actionButton.backgroundColor = .gray.withAlphaComponent(0.5)
         switch state {
         case .preparation:
-            messageLabel.text = ""
-            actionButton.setTitleColor(.white, for: .normal)
-            actionButton.setTitle("Ambil swafoto", for: .normal)
-            actionButton.backgroundColor = .red
+            overlayView.stepLabel.text = "Bersiap verifikasi wajah"
+            overlayView.actionButton.setTitleColor(.white, for: .normal)
+            overlayView.actionButton.setTitle("Ambil swafoto", for: .normal)
+            overlayView.actionButton.backgroundColor = .red
         case .faceForward:
-            messageLabel.text = "Please face forward"
+            overlayView.stepLabel.text = "Please face forward"
         case .rotateLeft:
-            messageLabel.text = "Please rotate your face to left"
+            overlayView.stepLabel.text = "Please rotate your face to left"
         case .rotateRight:
-            messageLabel.text = "Please rotate your face to right"
+            overlayView.stepLabel.text = "Please rotate your face to right"
         case .success:
-            messageLabel.textColor = .green
-            actionButton.setTitleColor(.white, for: .normal)
-            actionButton.setTitle("Selesai", for: .normal)
-            actionButton.backgroundColor = .red
-            messageLabel.text = "Face validation success!"
+            overlayView.actionButton.setTitleColor(.white, for: .normal)
+            overlayView.actionButton.setTitle("Selesai", for: .normal)
+            overlayView.actionButton.backgroundColor = .red
+            overlayView.stepLabel.text = "Face validation success!"
         case .failed:
-            messageLabel.text = "Face validation failed!"
+            overlayView.stepLabel.text = "Face validation failed!"
         }
     }
     
     
     func setupOverlay() {
-        overlayView2 = FaceRecogOverlayView(view.frame)
+        overlayView = FaceRecogOverlayView(view.frame)
         
-        guard let overlayView2 = overlayView2 else { return }
-        view.addSubview(overlayView2)
-        NSLayoutConstraint.activate([
-            
-        ])
+        guard let overlayView = overlayView else { return }
+        view.addSubview(overlayView)
+        overlayView.actionButton.addTarget(self, action: #selector(onActionTapped), for: .touchUpInside)
     }
 }
 

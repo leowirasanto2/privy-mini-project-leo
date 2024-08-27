@@ -25,7 +25,7 @@ class FaceRecogOverlayView: UIView {
         return $0
     }(UIView())
     
-    private var actionButton: UIButton = {
+    lazy var actionButton: UIButton = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.backgroundColor = .red
         $0.setTitleColor(.white, for: .normal)
@@ -39,7 +39,7 @@ class FaceRecogOverlayView: UIView {
         return createInstructionView()
     }()
     
-    private lazy var stepLabel: UILabel = {
+    lazy var stepLabel: UILabel = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.textAlignment = .center
         $0.textColor = .white
@@ -66,7 +66,7 @@ class FaceRecogOverlayView: UIView {
     private func setupPreviewContainer() {
         addSubview(previewContainer)
         bringSubviewToFront(previewContainer)
-        previewContainer.frame = .init(origin: .zero, size: .init(width: bounds.width * 0.8, height: bounds.width * 0.8))
+        previewContainer.frame = .init(origin: .zero, size: .init(width: bounds.width * 0.8, height: bounds.width))
         previewContainer.center = overlayView.center
     }
     
@@ -105,7 +105,7 @@ class FaceRecogOverlayView: UIView {
     private func setupCircleView() {
         let circleView = UIView()
         circleView.backgroundColor = .clear
-        circleView.frame.size = .init(width: previewContainer.bounds.width * 0.7, height: previewContainer.bounds.width * 0.7)
+        circleView.frame.size = .init(width: previewContainer.bounds.width * 0.8, height: previewContainer.bounds.width * 0.8)
         let previewCenter = CGPoint(x: previewContainer.frame.midX, y: previewContainer.frame.midY)
         circleView.center = previewContainer.convert(previewCenter, from: circleView)
         let overlayPath = UIBezierPath(rect: frame)
