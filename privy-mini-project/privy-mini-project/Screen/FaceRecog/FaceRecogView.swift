@@ -20,6 +20,8 @@ enum ValidationState {
 }
 
 class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
+    private let horizontalSpacing: CGFloat = 80
+    
     private var session: AVCaptureSession? = AVCaptureSession()
     private var captureDevice: AVCaptureDevice?
     private var pinchScale: CGFloat = 1
@@ -44,7 +46,8 @@ class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDeleg
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.textColor = .red
         $0.font = .systemFont(ofSize: 24, weight: .semibold)
-        $0.textAlignment = .center
+        $0.textAlignment = .left
+        $0.text = "Verifikasi Wajah"
         return $0
     }(UILabel())
     
@@ -69,6 +72,8 @@ class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDeleg
         view.backgroundColor = .white
         return view
     }()
+    
+    private var overlayView2: FaceRecogOverlayView?
     
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -106,7 +111,6 @@ class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDeleg
     private func setupView() {
         view.backgroundColor = .white
         setupOverlay()
-        setupInstructionView()
     }
     
     private func forceToFrontCamera() -> AVCaptureDevice? {
@@ -138,7 +142,14 @@ class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDeleg
                 self.view.layer.addSublayer(previewLayer)
                 rearrangeOverlayView()
             }
+            
             session.commitConfiguration()
+        } else {
+            let dummyPreview = UIView(frame: UIScreen.main.bounds)
+            dummyPreview.layer.backgroundColor = UIColor.brown.cgColor
+            
+            self.view.layer.addSublayer(dummyPreview.layer)
+            rearrangeOverlayView()
         }
     }
     
@@ -154,7 +165,8 @@ class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDeleg
     }
     
     private func rearrangeOverlayView() {
-        self.view.bringSubviewToFront(overlayView)
+        guard let overlayView2 = overlayView2 else { return }
+        self.view.bringSubviewToFront(overlayView2)
     }
     
     private func setupFrame() {
@@ -252,65 +264,15 @@ private extension FaceRecogView {
         }
     }
     
-    func setupInstructionView() {
-        let stack = UIStackView()
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        stack.distribution = .fill
-        stack.alignment = .center
-        stack.axis = .horizontal
-        stack.spacing = 16
-        instructionView.addSubview(stack)
-        
-        NSLayoutConstraint.activate([
-            stack.leadingAnchor.constraint(equalTo: instructionView.leadingAnchor, constant: 20),
-            stack.trailingAnchor.constraint(equalTo: instructionView.trailingAnchor, constant: -20),
-            stack.topAnchor.constraint(equalTo: instructionView.topAnchor, constant: 16),
-            stack.bottomAnchor.constraint(equalTo: instructionView.bottomAnchor, constant: -16),
-        ])
-        
-        let image = UIImageView(image: UIImage(systemName: "person.circle"))
-        image.translatesAutoresizingMaskIntoConstraints = false
-        image.heightAnchor.constraint(equalToConstant: 45).isActive = true
-        image.widthAnchor.constraint(equalToConstant: 45).isActive = true
-        image.tintColor = .red
-        let label = UILabel()
-        label.textColor = .black
-        label.text = "Sesuaikan wajah dengan garis panduan"
-        label.numberOfLines = 2
-        [image, label].forEach {
-            stack.addArrangedSubview($0)
-        }
-    }
     
     func setupOverlay() {
-        view.addSubview(overlayView)
-        overlayView.addSubview(instructionView)
-        overlayView.addSubview(messageLabel)
-        overlayView.addSubview(actionButton)
+        overlayView2 = FaceRecogOverlayView(view.frame)
         
+        guard let overlayView2 = overlayView2 else { return }
+        view.addSubview(overlayView2)
         NSLayoutConstraint.activate([
-            messageLabel.leadingAnchor.constraint(equalTo: overlayView.leadingAnchor, constant: 16),
-            messageLabel.trailingAnchor.constraint(equalTo: overlayView.trailingAnchor, constant: -16),
             
-            messageLabel.centerYAnchor.constraint(equalTo: overlayView.centerYAnchor, constant: 180),
-            
-            overlayView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            overlayView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            overlayView.topAnchor.constraint(equalTo: view.topAnchor),
-            overlayView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            
-            instructionView.leadingAnchor.constraint(equalTo: overlayView.leadingAnchor),
-            instructionView.trailingAnchor.constraint(equalTo: overlayView.trailingAnchor),
-            instructionView.topAnchor.constraint(equalTo: messageLabel.topAnchor, constant: 16),
-            
-            actionButton.heightAnchor.constraint(equalToConstant: 50),
-            actionButton.leadingAnchor.constraint(equalTo: overlayView.leadingAnchor, constant: 16),
-            actionButton.trailingAnchor.constraint(equalTo: overlayView.trailingAnchor, constant: -16),
-            actionButton.topAnchor.constraint(equalTo: instructionView.bottomAnchor, constant: 16),
         ])
-        overlayView.createCircleOverlay(view, 280)
-        
-        actionButton.addTarget(self, action: #selector(onActionTapped), for: .touchUpInside)
     }
 }
 

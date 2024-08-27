@@ -19,6 +19,8 @@
 		606A47B52C770F0700FBC004 /* ViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606A47B42C770F0700FBC004 /* ViewExtensions.swift */; };
 		606A47B72C771D1500FBC004 /* QRKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606A47B62C771D1500FBC004 /* QRKey.swift */; };
 		60ED205A2C77A4FC00B40801 /* ViewControllerPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60ED20592C77A4FC00B40801 /* ViewControllerPreview.swift */; };
+		60ED205C2C77AEBB00B40801 /* FaceRecogOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60ED205B2C77AEBB00B40801 /* FaceRecogOverlayView.swift */; };
+		60ED205E2C77BB1900B40801 /* DebuggingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60ED205D2C77BB1900B40801 /* DebuggingScreen.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +38,8 @@
 		606A47B42C770F0700FBC004 /* ViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtensions.swift; sourceTree = "<group>"; };
 		606A47B62C771D1500FBC004 /* QRKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRKey.swift; sourceTree = "<group>"; };
 		60ED20592C77A4FC00B40801 /* ViewControllerPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerPreview.swift; sourceTree = "<group>"; };
+		60ED205B2C77AEBB00B40801 /* FaceRecogOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceRecogOverlayView.swift; sourceTree = "<group>"; };
+		60ED205D2C77BB1900B40801 /* DebuggingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebuggingScreen.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +91,7 @@
 			children = (
 				606A47AA2C76F5D800FBC004 /* QRScanner */,
 				606A47A92C76F5D400FBC004 /* FaceRecog */,
+				60ED205D2C77BB1900B40801 /* DebuggingScreen.swift */,
 			);
 			path = Screen;
 			sourceTree = "<group>";
@@ -96,6 +101,7 @@
 			children = (
 				606A47AB2C76F5E500FBC004 /* FaceRecogView.swift */,
 				606A47AF2C7701F600FBC004 /* FaceRotation.swift */,
+				60ED205B2C77AEBB00B40801 /* FaceRecogOverlayView.swift */,
 			);
 			path = FaceRecog;
 			sourceTree = "<group>";
@@ -202,9 +208,11 @@
 				606A47B52C770F0700FBC004 /* ViewExtensions.swift in Sources */,
 				606A47B02C7701F600FBC004 /* FaceRotation.swift in Sources */,
 				606A47952C76F45100FBC004 /* AppDelegate.swift in Sources */,
+				60ED205E2C77BB1900B40801 /* DebuggingScreen.swift in Sources */,
 				606A47972C76F45100FBC004 /* SceneDelegate.swift in Sources */,
 				60ED205A2C77A4FC00B40801 /* ViewControllerPreview.swift in Sources */,
 				606A47AE2C76F60C00FBC004 /* QRScannerView.swift in Sources */,
+				60ED205C2C77AEBB00B40801 /* FaceRecogOverlayView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

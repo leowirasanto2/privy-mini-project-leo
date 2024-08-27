@@ -8,7 +8,13 @@
 import UIKit
 
 extension UIView {
-    func createCircleOverlay(_ parentView: UIView, _ diameter: CGFloat) {
+    static let screenSize = UIScreen.main.bounds.size
+    
+    func createCircleOverlay(_ diameter: CGFloat) {
+        guard let parentView = self.superview else {
+            return
+        }
+        
         let circleDiameter: CGFloat = diameter
         let circleCenter = CGPoint(x: parentView.bounds.midX, y: parentView.bounds.midY)
         let overlayPath = UIBezierPath(rect: parentView.bounds)
@@ -20,5 +26,24 @@ extension UIView {
         mask.path = overlayPath.cgPath
         mask.fillRule = .evenOdd
         self.layer.mask = mask
+    }
+    
+    func createRoundedRectOverlayMask(_ size: CGSize) {
+        guard let parentView = self.superview else {
+            return
+        }
+        
+        let path = UIBezierPath()
+        path.move(to: CGPoint.zero)
+        path.addLine(to: CGPoint(x: size.width, y: 0))
+        path.addLine(to: CGPoint(x: size.width, y: size.height))
+        path.addLine(to: CGPoint(x: 0, y: size.height))
+        path.addLine(to: .zero)
+        
+        let shapeLayer = CAShapeLayer()
+        shapeLayer.path = path.cgPath
+        shapeLayer.strokeColor = UIColor.black.cgColor
+        shapeLayer.fillColor = UIColor.clear.cgColor
+        shapeLayer.lineWidth = 1
     }
 }

@@ -24,6 +24,14 @@ class ViewController: UIViewController {
         $0.setTitleColor(.black, for: .normal)
         return $0
     }(UIButton())
+    
+    private lazy var debugBtn: UIButton = {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.setTitle("Debugging", for: .normal)
+        $0.addTarget(self, action: #selector(didTapDebug), for: .touchUpInside)
+        $0.setTitleColor(.black, for: .normal)
+        return $0
+    }(UIButton())
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,7 +55,7 @@ class ViewController: UIViewController {
             stackview.centerYAnchor.constraint(equalTo: view.centerYAnchor),
         ])
         
-        [faceRecogBtn, qrScannerBtn].forEach { stackview.addArrangedSubview($0) }
+        [faceRecogBtn, qrScannerBtn, debugBtn].forEach { stackview.addArrangedSubview($0) }
     }
 
     @objc
@@ -58,6 +66,11 @@ class ViewController: UIViewController {
     @objc
     private func didTapQRScanner(_ sender: Any) {
         navigationController?.pushViewController(QRScannerView(), animated: true)
+    }
+    
+    @objc
+    private func didTapDebug(_ sender: Any) {
+        navigationController?.pushViewController(DebuggingScreen(), animated: true)
     }
 }
 
