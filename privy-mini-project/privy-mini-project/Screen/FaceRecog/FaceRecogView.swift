@@ -10,6 +10,11 @@ import AVFoundation
 import Vision
 import SwiftUI
 
+protocol FaceRecogViewProtocol: AnyObject {
+    func onValidationStateChanged(_ newState: ValidationState)
+    var navigationController: UINavigationController? { get }
+}
+
 enum ValidationState {
     case preparation
     case faceForward
@@ -19,21 +24,16 @@ enum ValidationState {
     case failed
 }
 
-class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
-    private let horizontalSpacing: CGFloat = 80
+class FaceRecogView: UIViewController, FaceRecogViewProtocol, AVCaptureVideoDataOutputSampleBufferDelegate {
+    var presenter: FaceRecogPresenterProtocol?
     
+    private let horizontalSpacing: CGFloat = 80
+    private var pinchScale: CGFloat = 1
     private var session: AVCaptureSession? = AVCaptureSession()
     private var captureDevice: AVCaptureDevice?
-    private var pinchScale: CGFloat = 1
     private var previewLayer: AVCaptureVideoPreviewLayer?
     private var photoOutput: AVCaptureOutput?
     private var videoOutput: AVCaptureVideoDataOutput? = AVCaptureVideoDataOutput()
-    
-    private var state: ValidationState = .rotateRight {
-        didSet {
-            onStateChanged()
-        }
-    }
     
     private var messageLabel: UILabel = {
         $0.translatesAutoresizingMaskIntoConstraints = false
@@ -72,6 +72,14 @@ class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDeleg
         super.init(nibName: nil, bundle: nil)
     }
     
+    deinit {
+        session = nil
+        captureDevice = nil
+        previewLayer = nil
+        photoOutput = nil
+        videoOutput = nil
+    }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -85,7 +93,7 @@ class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDeleg
             self?.session?.startRunning()
         }
         
-        state = .preparation
+        presenter?.setState(new: .preparation)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -148,13 +156,7 @@ class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDeleg
     
     @objc
     private func onActionTapped(_ sender: Any) {
-        if state == .preparation {
-            state = .rotateRight
-        }
-        
-        if state == .success {
-            navigationController?.popViewController(animated: true)
-        }
+        presenter?.performActionButtonTapped()
     }
     
     private func rearrangeOverlayView() {
@@ -184,6 +186,36 @@ class FaceRecogView: UIViewController, AVCaptureVideoDataOutputSampleBufferDeleg
         
         detectFace(image: frame)
     }
+    
+    // MARK: - Protocol Implementations
+    
+    func onValidationStateChanged(_ newState: ValidationState) {
+        guard let overlayView = overlayView else { return }
+        overlayView.actionButton.setTitleColor(.black, for: .normal)
+        overlayView.actionButton.setTitle("Mohon ikuti instruksi", for: .normal)
+        overlayView.actionButton.isEnabled = presenter?.isActionButtonEnabled ?? false
+        overlayView.actionButton.backgroundColor = .gray.withAlphaComponent(0.5)
+        switch newState {
+        case .preparation:
+            overlayView.stepLabel.text = "Bersiap verifikasi wajah"
+            overlayView.actionButton.setTitleColor(.white, for: .normal)
+            overlayView.actionButton.setTitle("Ambil swafoto", for: .normal)
+            overlayView.actionButton.backgroundColor = .red
+        case .faceForward:
+            overlayView.stepLabel.text = "Please face forward"
+        case .rotateLeft:
+            overlayView.stepLabel.text = "Please rotate your face to left"
+        case .rotateRight:
+            overlayView.stepLabel.text = "Please rotate your face to right"
+        case .success:
+            overlayView.actionButton.setTitleColor(.white, for: .normal)
+            overlayView.actionButton.setTitle("Selesai", for: .normal)
+            overlayView.actionButton.backgroundColor = .red
+            overlayView.stepLabel.text = "Face validation success!"
+        case .failed:
+            overlayView.stepLabel.text = "Face validation failed!"
+        }
+    }
 }
 
 // MARK: - setup face detection
@@ -205,62 +237,15 @@ private extension FaceRecogView {
         for faceObservation in observedFaces {
             let faceRotationAngle = CGFloat(truncating: faceObservation.yaw ?? 0)
             let rotationThreshold = CGFloat(45.0).toRadians
-            
-            switch state {
-            case .faceForward:
-                if abs(faceRotationAngle) <= rotationThreshold {
-                    state = .success
-                }
-            case .rotateLeft:
-                if faceRotationAngle < -rotationThreshold {
-                    state = .faceForward
-                }
-            case .rotateRight:
-                if faceRotationAngle > rotationThreshold {
-                    state = .rotateLeft
-                }
-            default:
-                break
-            }
+            presenter?.handleFaceDetectionResult(faceRotationAngle: faceRotationAngle, rotationThreshold: rotationThreshold)
         }
     }
 }
 
 // MARK: - setup state & views
 private extension FaceRecogView {
-    func onStateChanged() {
-        guard let overlayView = overlayView else { return }
-
-        overlayView.actionButton.setTitleColor(.black, for: .normal)
-        overlayView.actionButton.setTitle("Mohon ikuti instruksi", for: .normal)
-        overlayView.actionButton.isEnabled = state == .preparation || state == .success
-        overlayView.actionButton.backgroundColor = .gray.withAlphaComponent(0.5)
-        switch state {
-        case .preparation:
-            overlayView.stepLabel.text = "Bersiap verifikasi wajah"
-            overlayView.actionButton.setTitleColor(.white, for: .normal)
-            overlayView.actionButton.setTitle("Ambil swafoto", for: .normal)
-            overlayView.actionButton.backgroundColor = .red
-        case .faceForward:
-            overlayView.stepLabel.text = "Please face forward"
-        case .rotateLeft:
-            overlayView.stepLabel.text = "Please rotate your face to left"
-        case .rotateRight:
-            overlayView.stepLabel.text = "Please rotate your face to right"
-        case .success:
-            overlayView.actionButton.setTitleColor(.white, for: .normal)
-            overlayView.actionButton.setTitle("Selesai", for: .normal)
-            overlayView.actionButton.backgroundColor = .red
-            overlayView.stepLabel.text = "Face validation success!"
-        case .failed:
-            overlayView.stepLabel.text = "Face validation failed!"
-        }
-    }
-    
-    
     func setupOverlay() {
         overlayView = FaceRecogOverlayView(view.frame)
-        
         guard let overlayView = overlayView else { return }
         view.addSubview(overlayView)
         overlayView.actionButton.addTarget(self, action: #selector(onActionTapped), for: .touchUpInside)

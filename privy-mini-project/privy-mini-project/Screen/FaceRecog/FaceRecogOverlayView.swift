@@ -99,7 +99,6 @@ class FaceRecogOverlayView: UIView {
         setupCircleView()
         setupSquareView()
         setupStepView()
-        setupMask()
     }
     
     private func setupCircleView() {
@@ -180,21 +179,6 @@ class FaceRecogOverlayView: UIView {
             stepLabel.trailingAnchor.constraint(equalTo: previewContainer.trailingAnchor),
             stepLabel.heightAnchor.constraint(equalToConstant: 35),
         ])
-    }
-    
-    private func setupMask() {
-        self.layoutIfNeeded()
-        
-        let maskLayer = CAShapeLayer()
-        maskLayer.frame = overlayView.bounds
-        
-        let path = UIBezierPath(rect: overlayView.bounds)
-        let rectanglePath = UIBezierPath(rect: previewContainer.frame)
-        path.append(rectanglePath)
-        path.usesEvenOddFillRule = true
-        maskLayer.path = path.cgPath
-        
-//        overlayView.layer.mask = maskLayer
     }
 }
 
