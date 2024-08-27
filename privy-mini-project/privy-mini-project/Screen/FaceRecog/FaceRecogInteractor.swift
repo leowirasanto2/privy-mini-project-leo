@@ -8,7 +8,7 @@
 import Foundation
 
 protocol FaceRecogInteractorProtocol: AnyObject {
-    
+    func fakeSendFaceVerification()
 }
 
 class FaceRecogInteractor: FaceRecogInteractorProtocol {
@@ -16,5 +16,11 @@ class FaceRecogInteractor: FaceRecogInteractorProtocol {
     
     init() {
         
+    }
+    
+    func fakeSendFaceVerification() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
+            self?.presenter?.onFaceVerificationReceived(.success(""))
+        }
     }
 }

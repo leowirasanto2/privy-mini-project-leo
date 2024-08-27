@@ -11,18 +11,30 @@ protocol FaceRecogPresenterProtocol: AnyObject {
     func setState(new state: ValidationState)
     func performActionButtonTapped()
     func handleFaceDetectionResult(faceRotationAngle: CGFloat, rotationThreshold: CGFloat)
+    func onFaceVerificationReceived(_ result: Result<String, FaceError>)
+    
     var isActionButtonEnabled: Bool { get }
+    var isDetectFaceEnabled: Bool { get set }
 }
 
 class FaceRecogPresenter: FaceRecogPresenterProtocol {
     weak var view: FaceRecogViewProtocol?
     var wireframe: FaceRecogWireframeProtocol?
     var interactor: FaceRecogInteractorProtocol?
+    var isDetectFaceEnabled: Bool = false
     
     var isActionButtonEnabled: Bool {
         return state == .preparation || state == .success
     }
-    
+    private var isLoading = false {
+        didSet {
+            if isLoading {
+                view?.showLoading()
+            } else {
+                view?.hideLoading()
+            }
+        }
+    }
     private var state: ValidationState = .preparation {
         didSet {
             view?.onValidationStateChanged(state)
@@ -33,18 +45,29 @@ class FaceRecogPresenter: FaceRecogPresenterProtocol {
         
     }
     
+    func onFaceVerificationReceived(_ result: Result<String, FaceError>) {
+        isLoading = false
+        switch result {
+        case .success:
+            setState(new: .success)
+        case .failure(let failure):
+            setState(new: .failed)
+            print(failure.localizedDescription)
+        }
+    }
+    
     func setState(new state: ValidationState) {
         self.state = state
     }
     
     func performActionButtonTapped() {
         if state == .preparation {
+            isDetectFaceEnabled = true
             state = .rotateRight
             return
         }
         
         if state == .success {
-//            view?.navigationController?.popViewController(animated: true)
             wireframe?.navigateToNextStep()
             return
         }
@@ -54,7 +77,9 @@ class FaceRecogPresenter: FaceRecogPresenterProtocol {
         switch state {
         case .faceForward:
             if abs(faceRotationAngle) <= rotationThreshold {
-                state = .success
+                self.isLoading = true
+                self.interactor?.fakeSendFaceVerification()
+                self.isDetectFaceEnabled = false
             }
         case .rotateLeft:
             if faceRotationAngle < -rotationThreshold {

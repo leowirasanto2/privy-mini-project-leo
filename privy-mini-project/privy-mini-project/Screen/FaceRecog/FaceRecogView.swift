@@ -12,6 +12,8 @@ import SwiftUI
 
 protocol FaceRecogViewProtocol: AnyObject {
     func onValidationStateChanged(_ newState: ValidationState)
+    func hideLoading()
+    func showLoading()
     var navigationController: UINavigationController? { get }
 }
 
@@ -66,6 +68,8 @@ class FaceRecogView: UIViewController, FaceRecogViewProtocol, AVCaptureVideoData
         return $0
     }(UIButton())
     
+    private var loadingView: FullscreenLoaderProtocol?
+    
     private var overlayView: FaceRecogOverlayView?
     
     init() {
@@ -88,11 +92,7 @@ class FaceRecogView: UIViewController, FaceRecogViewProtocol, AVCaptureVideoData
         super.viewDidLoad()
         setupView()
         runCamera()
-        
-        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
-            self?.session?.startRunning()
-        }
-        
+        startSession()
         presenter?.setState(new: .preparation)
     }
     
@@ -107,6 +107,16 @@ class FaceRecogView: UIViewController, FaceRecogViewProtocol, AVCaptureVideoData
         session = nil
         videoOutput = nil
         photoOutput = nil
+    }
+    
+    private func startSession() {
+        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
+            self?.session?.startRunning()
+        }
+    }
+    
+    private func stopSession() {
+        session?.stopRunning()
     }
     
     private func setupView() {
@@ -212,9 +222,37 @@ class FaceRecogView: UIViewController, FaceRecogViewProtocol, AVCaptureVideoData
             overlayView.actionButton.setTitle("Selesai", for: .normal)
             overlayView.actionButton.backgroundColor = .red
             overlayView.stepLabel.text = "Face validation success!"
+            stopSession()
         case .failed:
             overlayView.stepLabel.text = "Face validation failed!"
+            stopSession()
         }
+    }
+    
+    func showLoading() {
+        loadingView = FullscreenLoader()
+        loadingView?.start(self, {
+            print("loader started")
+        })
+//        let loaderView = UIView(frame: view.frame)
+//        loaderView.tag = 111
+//        loaderView.backgroundColor = .white
+//        loaderView.alpha = 0.3
+//        let loaderCenter = CGPoint(x: view.frame.midX, y: view.frame.midY)
+//        loaderView.center = view.convert(loaderCenter, from: loaderView)
+//        view.addSubview(loaderView)
+//        
+//        let circular = UIActivityIndicatorView(frame: .init(origin: .zero, size: .init(width: 50, height: 50)))
+//        let cCenter = CGPoint(x: loaderView.frame.midX, y: loaderView.frame.midY)
+//        circular.center = loaderView.convert(cCenter, from: circular)
+//        loaderView.addSubview(circular)
+    }
+    
+    func hideLoading() {
+        loadingView?.stop({
+            print("loader stopped")
+        })
+//        view.subviews.first(where: { $0.tag == 111 })?.removeFromSuperview()
     }
 }
 
@@ -235,6 +273,7 @@ private extension FaceRecogView {
     
     func handleFaceDetectionResults(observedFaces: [VNFaceObservation], pixelBuffer: CVPixelBuffer) {
         for faceObservation in observedFaces {
+            guard presenter?.isDetectFaceEnabled == true else { return }
             let faceRotationAngle = CGFloat(truncating: faceObservation.yaw ?? 0)
             let rotationThreshold = CGFloat(45.0).toRadians
             presenter?.handleFaceDetectionResult(faceRotationAngle: faceRotationAngle, rotationThreshold: rotationThreshold)
