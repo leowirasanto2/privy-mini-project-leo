@@ -21,7 +21,10 @@ class FaceRecogWireframe: FaceRecogWireframeProtocol {
     func navigateToNextStep() {
         let viewController = UIViewController()
         viewController.view.backgroundColor = .red
-        navigationController?.pushViewController(viewController, animated: true)
+        
+        // replacing last viewcontroller
+        navigationController?.viewControllers.removeLast()
+        navigationController?.viewControllers.append(viewController)
     }
     
     static func createView(_ navigationController: UINavigationController? = nil) -> FaceRecogView {
